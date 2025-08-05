@@ -38,9 +38,11 @@ void setup() {
   brightnessController->applyBrightness();
 
   // Quick single blink to show we're alive
+#ifdef DEBUG
   digitalWrite(STATUS_LED_PIN, HIGH);
   delay(50);
   digitalWrite(STATUS_LED_PIN, LOW);
+#endif
 }
 
 void loop() {

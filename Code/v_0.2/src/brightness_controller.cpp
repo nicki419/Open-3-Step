@@ -1,9 +1,12 @@
-#include <../include/brightness_controller.h>
+#include <brightness_controller.h>
 #include <RBDdimmer.h>
-#include <IO_Pins.h>
 #include <Arduino.h>
 #include <at24c256.h>
-#include <../include/Storage_Addresses.h>
+#include <Storage_Addresses.h>
+
+#ifdef DEBUG
+#include <IO_Pins.h>
+#endif
 
 BrightnessController::BrightnessController(dimmerLamp* dimmer, AT24C256* eeprom) : dimmer(dimmer), eeprom(eeprom) {
 
@@ -52,12 +55,14 @@ byte BrightnessController::readWithRetry(const byte address, const byte defaultV
 void BrightnessController::saveBrightness(const int currentBrightnessIndex) const {
     if (!writeAndVerify(BRIGHTNESS_INDEX_ADDR, currentBrightnessIndex)) {
         // Write failed - indicate error by rapid LED flashing
+#ifdef DEBUG
         for (int i = 0; i < 5; i++) {
             digitalWrite(STATUS_LED_PIN, HIGH);
             delay(50);
             digitalWrite(STATUS_LED_PIN, LOW);
             delay(50);
         }
+#endif
     }
 }
 
@@ -70,6 +75,7 @@ void BrightnessController::cycleBrightness() {
 }
 
 void BrightnessController::handleStatusLED() {
+#ifdef DEBUG
     const int brightness = brightnessLevels[currentBrightnessIndex];
     const unsigned long now = millis();
 
@@ -93,6 +99,7 @@ void BrightnessController::handleStatusLED() {
         // Solid ON for highest brightness
         digitalWrite(STATUS_LED_PIN, HIGH);
     }
+#endif
 }
 
 int BrightnessController::getCurrentBrightness() const {
