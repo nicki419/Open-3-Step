@@ -46,11 +46,10 @@ void setup() {
 }
 
 void loop() {
-  bool currentMains = (digitalRead(MAINS_DETECT_PIN) == LOW);
+  const bool currentMains = (digitalRead(MAINS_DETECT_PIN) == LOW);
 
   if (!mainsPresent && currentMains) {
-    unsigned long interruption = millis() - mainsLostTime;
-    if (interruption <= 350) {
+    if (const unsigned long interruption = millis() - mainsLostTime; interruption <= 350) {
       brightnessController->cycleBrightness();
       brightnessController->applyBrightness();
       brightnessController->saveBrightness(currentBrightnessIndex);

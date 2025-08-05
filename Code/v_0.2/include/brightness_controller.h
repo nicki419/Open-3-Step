@@ -19,15 +19,20 @@ public:
     // Public methods
     void applyBrightness() const;
     void cycleBrightness();
-    void handleStatusLED();
 
-    bool writeAndVerify(byte address, byte data) const;
-    byte readWithRetry(const byte address, const byte defaultValue) const;
-    void saveBrightness(const int currentBrightnessIndex) const;
+#ifdef DEBUG
+    void handleStatusLED();
+#else
+    static void handleStatusLED();
+#endif
+
+    [[nodiscard]] bool writeAndVerify(byte address, byte data) const;
+    [[nodiscard]] byte readWithRetry(byte address, byte defaultValue) const;
+    void saveBrightness(int currentBrightnessIndex) const;
     
     // Getters
-    int getCurrentBrightness() const;
-    int getCurrentBrightnessIndex() const;
+    [[nodiscard]] int getCurrentBrightness() const;
+    [[nodiscard]] int getCurrentBrightnessIndex() const;
 };
 
 #endif
