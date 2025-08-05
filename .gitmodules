@@ -1,0 +1,9 @@
+[submodule "Code/v_0.2/RBDDimmer"]
+	path = Code/v_0.2/RBDDimmer
+	url = https://github.com/RobotDynOfficial/RBDDimmer.git
+[submodule "Code/v_0.2/AT24C256"]
+	path = Code/v_0.2/AT24C256
+	url = https://github.com/dantudose/AT24C256.git
+[submodule "Code/v_0.2/arduino-library-at24cxxx"]
+	path = Code/v_0.2/arduino-library-at24cxxx
+	url = https://github.com/stefangs/arduino-library-at24cxxx.git
