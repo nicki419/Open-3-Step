@@ -547,7 +547,8 @@ _autosave-*
 fp-info-cache
 ~*.lck
 \#auto_saved_files#
-
+**.gbr
+**.gbrjob
 # Netlist files (exported from Eeschema)
 *.net
 
