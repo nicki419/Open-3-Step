@@ -42,17 +42,15 @@ byte BrightnessController::readWithRetry(const byte address, const byte defaultV
 
         if (const byte value = eeprom->read(address); value < 3) {
             dimmer->setState(ON);
-            applyBrightness();
             return value;
         }
     }
 
     dimmer->setState(ON);
-    applyBrightness();
     return defaultValue;
 }
 
-void BrightnessController::saveBrightness(const int currentBrightnessIndex) const {
+void BrightnessController::saveBrightnessIndex(const int currentBrightnessIndex) const {
     if (!writeAndVerify(BRIGHTNESS_INDEX_ADDR, currentBrightnessIndex)) {
         // Write failed - indicate error by rapid LED flashing
 #ifdef DEBUG
@@ -67,7 +65,13 @@ void BrightnessController::saveBrightness(const int currentBrightnessIndex) cons
 }
 
 void BrightnessController::applyBrightness() const {
-    dimmer->setPower(brightnessLevels[currentBrightnessIndex]);
+    const int address = currentBrightnessIndex == 0
+                            ? BRIGHTNESS_VALUE1_ADDR
+                            : currentBrightnessIndex == 1
+                                  ? BRIGHTNESS_VALUE2_ADDR
+                                  : BRIGHTNESS_VALUE3_ADDR;
+    const int brightness = readWithRetry(address, 0);
+    dimmer->setPower(brightness);
 }
 
 void BrightnessController::cycleBrightness() {
