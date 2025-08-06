@@ -10,4 +10,9 @@
 #define DIMMER_PIN 3           // Dimmer PSM output
 #define STATUS_LED_PIN 12      // External status LED
 
+#define POT1_PIN A2             // ADC2 (PC2/A2)
+#define POT2_PIN A1             // ADC1 (PC1/A1)
+#define POT3_PIN A0             // ADC0 (PC0/A0)
+#define BUTTON_PIN A3           // ADC3 (PC3/A3) Used as digital input
+
 #endif //IO_PINS_H
