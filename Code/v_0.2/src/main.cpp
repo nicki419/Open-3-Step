@@ -60,7 +60,7 @@ void loop() {
     if (const unsigned long interruption = millis() - mainsLostTime; interruption <= 350) {
       brightnessController->cycleBrightness();
       brightnessController->applyBrightness();
-      brightnessController->saveBrightness(currentBrightnessIndex);
+      brightnessController->saveBrightnessIndex(currentBrightnessIndex);
     }
   }
 
