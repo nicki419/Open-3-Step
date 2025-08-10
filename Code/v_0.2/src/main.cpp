@@ -9,6 +9,7 @@
 
 #include "settings_controller.h"
 
+#define DELAY 500
 
 constexpr int brightnessLevels[3] = {30, 60, 100}; // brightness % levels
 
@@ -108,7 +109,7 @@ void loop() {
   }
 
   if (!mainsPresent && currentMains) {
-    if (const unsigned long interruption = millis() - mainsLostTime; interruption <= 350) {
+    if (const unsigned long interruption = millis() - mainsLostTime; interruption <= DELAY) {
       brightnessController->cycleBrightness();
       const int currentBrightnessIndex = brightnessController->getCurrentBrightnessIndex();
       brightnessController->applyBrightness();
