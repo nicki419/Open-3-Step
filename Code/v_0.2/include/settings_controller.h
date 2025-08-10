@@ -7,7 +7,7 @@
 
 #include <RBDdimmer.h>
 #include <at24c256.h>
-#include <edge_detector.h>
+#include <OneButtonTiny.h>
 #include <IO_Pins.h>
 #include <brightness_controller.h>
 
@@ -16,15 +16,16 @@ private:
     dimmerLamp* dimmer;
     AT24C256* eeprom;
     BrightnessController* brightness_controller;
-    EdgeDetector* edge_detector;
+    OneButtonTiny* button;
 
     void setAndSaveBrightness(int currentBrightnessIndex) const;
 
 public:
     SettingsController(dimmerLamp *dimmer, AT24C256 *eeprom, BrightnessController *brightness_controller,
-                       EdgeDetector *edge_detector);
+                       OneButtonTiny *button);
 
-    void settings_loop() const;
+    void handle_button_click(int currentBrightnessIndex) const;
+    void handle_button_hold(int currentBrightnessIndex) const;
 };
 
 #endif //SETTINGS_CONTROLLER_H

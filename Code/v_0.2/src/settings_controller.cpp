@@ -4,12 +4,13 @@
 
 #include <settings_controller.h>
 #include <IO_Pins.h>
-#include <edge_detector.h>
+#include <OneButtonTiny.h>
 
 #include "Storage_Addresses.h"
 
 void SettingsController::setAndSaveBrightness(const int currentBrightnessIndex) const {
     // Read from ADC
+    brightness_controller->setCurrentBrightnessIndex(currentBrightnessIndex);
     const int pin = currentBrightnessIndex == 0 ? POT1_PIN : currentBrightnessIndex == 1 ? POT2_PIN : POT3_PIN;
     const int address = currentBrightnessIndex == 0
                             ? BRIGHTNESS_VALUE1_ADDR
@@ -31,34 +32,19 @@ void SettingsController::setAndSaveBrightness(const int currentBrightnessIndex) 
 }
 
 SettingsController::SettingsController(dimmerLamp *dimmer, AT24C256 *eeprom,
-                                       BrightnessController *brightness_controller, EdgeDetector *edge_detector):
+                                       BrightnessController *brightness_controller, OneButtonTiny *button):
     dimmer(dimmer),
     eeprom(eeprom),
     brightness_controller(brightness_controller),
-    edge_detector(edge_detector) {
+    button(button) {
 
 }
 
-void SettingsController::settings_loop() const {
-    bool running = true;
-    int currentBrightnessIndex = 0;
+void SettingsController::handle_button_click(const int currentBrightnessIndex) const {
+    setAndSaveBrightness(currentBrightnessIndex);
+}
 
-    while (running) {
-        switch (edge_detector->detectButtonEvent()) {
-            case BUTTON_RELEASED:
-                setAndSaveBrightness(currentBrightnessIndex);
-                break;
-
-            case BUTTON_HELD:
-                currentBrightnessIndex = (currentBrightnessIndex + 1) % 3;
-                setAndSaveBrightness(currentBrightnessIndex);
-                break;
-
-            case BUTTON_PRESSED:
-            case BUTTON_RELEASED_AFTER_HOLD:
-            case NO_EVENT:
-            default:
-                break;
-        }
-    }
+void SettingsController::handle_button_hold(int currentBrightnessIndex) const {
+    currentBrightnessIndex = (currentBrightnessIndex + 1) % 3;
+    setAndSaveBrightness(currentBrightnessIndex);
 }
