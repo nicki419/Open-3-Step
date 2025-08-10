@@ -41,6 +41,9 @@ void setup() {
   pinMode(MAINS_DETECT_PIN, INPUT);
   pinMode(STATUS_LED_PIN, OUTPUT);
   pinMode(BUTTON_PIN, INPUT);
+  pinMode(POT1_PIN, INPUT);
+  pinMode(POT2_PIN, INPUT);
+  pinMode(POT3_PIN, INPUT);
 
   Wire.begin();
   dimmer.begin(NORMAL_MODE, ON);
@@ -73,10 +76,15 @@ void setup() {
 
   button->attachDoubleClick([]() {
     digitalWrite(STATUS_LED_PIN, HIGH);
-      delay(100);
-      digitalWrite(STATUS_LED_PIN, LOW);
-      delay(100);
+    delay(100);
+    digitalWrite(STATUS_LED_PIN, LOW);
+    delay(100);
+
     inSettingsLoop = !inSettingsLoop;
+    if (inSettingsLoop) {
+      brightnessController->setCurrentBrightnessIndex(0);
+      settingsController->handle_button_click(brightnessController->getCurrentBrightnessIndex());
+    }
   });
 
   button->attachLongPressStart([]() {
@@ -95,6 +103,7 @@ void loop() {
   const bool currentMains = (digitalRead(MAINS_DETECT_PIN) == LOW);
 
   if (inSettingsLoop) {
+    settingsController->settings_loop(brightnessController->getCurrentBrightnessIndex());
     return;
   }
 

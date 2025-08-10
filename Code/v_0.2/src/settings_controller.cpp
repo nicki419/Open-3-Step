@@ -8,6 +8,17 @@
 
 #include "Storage_Addresses.h"
 
+int readPotAverage(const int pin, const int samples = 5) {
+    int total = 0;
+    for (int i = 0; i < samples; i++) {
+        analogRead(pin);
+        delay(5);
+        total += analogRead(pin);
+        delay(5);
+    }
+    return total / samples;
+}
+
 void SettingsController::setAndSaveBrightness(const int currentBrightnessIndex) const {
     // Read from ADC
     brightness_controller->setCurrentBrightnessIndex(currentBrightnessIndex);
@@ -17,7 +28,9 @@ void SettingsController::setAndSaveBrightness(const int currentBrightnessIndex) 
                             : currentBrightnessIndex == 1
                                   ? BRIGHTNESS_VALUE2_ADDR
                                   : BRIGHTNESS_VALUE3_ADDR;
-    const int pot_reading =  map(analogRead(pin), 0, 1023, 1, 100);
+    analogRead(pin);
+    delay(10);
+    const int pot_reading =  static_cast<int>(map(readPotAverage(pin), 0, 1023, 1, 100));
 
     // Set dimmer and write on EEPROM
     dimmer->setPower(pot_reading);
@@ -37,7 +50,53 @@ SettingsController::SettingsController(dimmerLamp *dimmer, AT24C256 *eeprom,
     eeprom(eeprom),
     brightness_controller(brightness_controller),
     button(button) {
+    last_LED_Blink = millis();
 
+}
+
+void SettingsController::settings_loop(const int currentBrightnessIndex) {
+    const unsigned long currentTime = millis();
+    
+    // Check if we should start a new blink sequence
+    if (currentTime - last_LED_Blink >= 1000) {
+        blink_state = BLINK_START;
+        blink_count = 0;
+        blink_timer = currentTime;
+        last_LED_Blink = currentTime;
+    }
+    
+    // Handle the blinking state machine
+    if (blink_state != BLINK_IDLE) {
+        switch (blink_state) {
+            case BLINK_START:
+                if (blink_count <= currentBrightnessIndex) {
+                    digitalWrite(STATUS_LED_PIN, HIGH);
+                    blink_state = BLINK_ON;
+                    blink_timer = currentTime;
+                } else {
+                    blink_state = BLINK_IDLE;
+                }
+                break;
+                
+            case BLINK_ON:
+                if (currentTime - blink_timer >= 100) {
+                    digitalWrite(STATUS_LED_PIN, LOW);
+                    blink_state = BLINK_OFF;
+                    blink_timer = currentTime;
+                }
+                break;
+                
+            case BLINK_OFF:
+                if (currentTime - blink_timer >= 100) {
+                    blink_count++;
+                    blink_state = BLINK_START;
+                    blink_timer = currentTime;
+                }
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 void SettingsController::handle_button_click(const int currentBrightnessIndex) const {

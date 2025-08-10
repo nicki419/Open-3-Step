@@ -29,6 +29,7 @@ public:
 
     [[nodiscard]] bool writeAndVerify(byte address, byte data) const;
     [[nodiscard]] byte readWithRetry(byte address, byte defaultValue) const;
+    [[nodiscard]] byte readBrightnessWithRetry(byte address, byte defaultValue) const;
     void saveBrightnessIndex(int currentBrightnessIndex) const;
     
     // Getters
