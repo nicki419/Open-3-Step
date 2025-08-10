@@ -34,6 +34,9 @@ public:
     // Getters
     [[nodiscard]] int getCurrentBrightness() const;
     [[nodiscard]] int getCurrentBrightnessIndex() const;
+
+    // Setters
+    void setCurrentBrightnessIndex(int currentBrightnessIndex);
 };
 
 #endif

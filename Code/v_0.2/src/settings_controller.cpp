@@ -60,6 +60,5 @@ void SettingsController::settings_loop() const {
             default:
                 break;
         }
-        running = false;
     }
 }

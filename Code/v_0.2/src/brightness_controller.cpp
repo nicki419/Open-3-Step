@@ -13,14 +13,12 @@ BrightnessController::BrightnessController(dimmerLamp* dimmer, AT24C256* eeprom)
 }
 
 bool BrightnessController::writeAndVerify(const byte address, const byte data) const {
+    dimmer->setPower(0);
+    dimmer->setState(OFF);
+    delay(50);
     for (int attempt = 0; attempt < 3; attempt++) {
-        // Temporarily disable dimmer
-        dimmer->setPower(0);
-        dimmer->setState(OFF);
-        delayMicroseconds(100);
-
         eeprom->write(address, data);
-        delayMicroseconds(100);
+        delay(20);
 
         if (const byte readBack = eeprom->read(address); readBack == data) {
             dimmer->setState(ON);
@@ -112,4 +110,8 @@ int BrightnessController::getCurrentBrightness() const {
 
 int BrightnessController::getCurrentBrightnessIndex() const {
     return currentBrightnessIndex;
+}
+
+void BrightnessController::setCurrentBrightnessIndex(const int currentBrightnessIndex) {
+    this->currentBrightnessIndex = currentBrightnessIndex;
 }

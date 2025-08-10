@@ -10,7 +10,6 @@
 
 
 constexpr int brightnessLevels[3] = {30, 60, 100}; // brightness % levels
-int currentBrightnessIndex = 0;
 
 dimmerLamp dimmer(DIMMER_PIN);
 AT24C256* eeprom = nullptr;
@@ -24,7 +23,8 @@ unsigned long lastBlinkTime = 0;
 bool ledOn = false;
 
 void loadBrightness() {
-  currentBrightnessIndex = brightnessController->readWithRetry(BRIGHTNESS_INDEX_ADDR, 0);
+  const int currentBrightnessIndex = brightnessController->readWithRetry(BRIGHTNESS_INDEX_ADDR, 2);
+  brightnessController->setCurrentBrightnessIndex(currentBrightnessIndex);
 }
 
 void setup() {
@@ -59,6 +59,7 @@ void loop() {
   if (!mainsPresent && currentMains) {
     if (const unsigned long interruption = millis() - mainsLostTime; interruption <= 350) {
       brightnessController->cycleBrightness();
+      const int currentBrightnessIndex = brightnessController->getCurrentBrightnessIndex();
       brightnessController->applyBrightness();
       brightnessController->saveBrightnessIndex(currentBrightnessIndex);
     }
@@ -75,7 +76,6 @@ void loop() {
 
   mainsPresent = currentMains;
   brightnessController->handleStatusLED();
-  delay(20);
 }
 
 void onZeroCross() {
