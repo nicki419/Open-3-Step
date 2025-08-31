@@ -3,7 +3,7 @@ $fn = $preview ? 0 : 100;
 include <_modules.scad>;
 include <_generic_board.scad>;
 
-length = 49.5;
+length = 51;
 width = 26;
 height = 2;
 
