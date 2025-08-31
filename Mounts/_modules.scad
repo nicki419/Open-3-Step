@@ -76,3 +76,21 @@ module wood_hole()
         }
     }
 }
+
+module washer(size = 2)
+{
+    difference()
+    {
+        cylinder(r=size-size/4, h=1.5);
+        cylinder(r=size/2, h=1.5);
+    }
+}
+
+module washer_m2_to_m3()
+{
+    difference()
+    {
+        cylinder(r=3-3/4, h=1.5);
+        cylinder(r=1, h=1.5);
+    }
+}

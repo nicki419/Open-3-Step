@@ -33,3 +33,10 @@ mounting_hole(mounting_hole_length, mounting_hole_width);
 // 7, 18
 translate([length - 18, width - 7, 2])
 mounting_hole(mounting_hole_length, mounting_hole_width);
+
+translate([(3-3/4), width, 0])
+for(i = [0 : 1])
+{
+    translate([i*5, 5, 0]) washer();
+    translate([i*5, 5, 0]) washer();
+}

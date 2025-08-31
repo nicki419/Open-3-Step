@@ -26,3 +26,13 @@ difference()
         wood_hole();
     }
 }
+
+translate([(3-3/4), width + 5, 0])
+for(i = [0 : 1])
+{
+    for(j = [0 : 1])
+    {
+        translate([i*5, j*5, 0]) washer();
+        translate([i*5, j*5, 0]) washer();
+    }
+}
