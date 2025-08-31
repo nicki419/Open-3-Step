@@ -7,9 +7,10 @@
 #include <Storage_Addresses.h>
 #include <OneButtonTiny.h>
 
+#include "ac_switch_controller.h"
 #include "settings_controller.h"
 
-#define DELAY 500
+#define DELAY 4000
 #define AC_SW_DELAY 75
 
 constexpr int brightnessLevels[3] = {30, 60, 100}; // brightness % levels
@@ -18,6 +19,7 @@ dimmerLamp dimmer(DIMMER_PIN);
 AT24C256* eeprom = nullptr;
 BrightnessController* brightnessController = nullptr;
 SettingsController* settingsController = nullptr;
+ACSwitchController* acSwitchController = nullptr;
 OneButtonTiny* button = nullptr;
 
 unsigned long mainsLostTime = 0;
@@ -25,6 +27,7 @@ bool mainsPresent = true;
 unsigned long lastBlinkTime = 0;
 bool ledOn = false;
 bool inSettingsLoop = false;
+bool inACSwitchLoop = false;
 
 void loadBrightness() {
   const int currentBrightnessIndex = brightnessController->readWithRetry(BRIGHTNESS_INDEX_ADDR, 2);
@@ -37,30 +40,6 @@ void handleClick() {
 
 void handleHold() {
 
-}
-
-void handleACSwitch() {
-  switch (brightnessController->getCurrentBrightnessIndex()) {
-    // Medium Brightness. Toggle AC Switch Once.
-    case 1:
-      digitalWrite(AC_SW_PIN, HIGH);
-      delay(AC_SW_DELAY);
-      digitalWrite(AC_SW_PIN, LOW);
-      break;
-
-    // Lowest Brightness. Toggle AC Switch Twice.
-    case 2:
-      digitalWrite(AC_SW_PIN, HIGH);
-      delay(AC_SW_DELAY);
-      digitalWrite(AC_SW_PIN, LOW);
-      delay(AC_SW_DELAY);
-      digitalWrite(AC_SW_PIN, HIGH);
-      delay(AC_SW_DELAY);
-      digitalWrite(AC_SW_PIN, LOW);
-      break;
-    default:
-      break;
-  }
 }
 
 void setup() {
@@ -82,10 +61,11 @@ void setup() {
         false
     );
   settingsController = new SettingsController(&dimmer, eeprom, brightnessController, button);
+  acSwitchController = new ACSwitchController(&dimmer, eeprom, brightnessController, button);
 
   loadBrightness();
   brightnessController->applyBrightness();
-  handleACSwitch();
+  acSwitchController->handleACSwitch(AC_SW_DELAY);
 
 #ifdef DEBUG
   digitalWrite(STATUS_LED_PIN, HIGH);
@@ -94,11 +74,14 @@ void setup() {
 #endif
 
   button->attachClick([]() {
-    if (!inSettingsLoop) {
+    if (!inSettingsLoop && !inACSwitchLoop) {
       handleClick();
     }
-    else {
+    else if (inSettingsLoop) {
       settingsController->handle_button_click(brightnessController->getCurrentBrightnessIndex());
+    }
+    else if (inACSwitchLoop) {
+      acSwitchController->handle_button_click();
     }
   });
 
@@ -108,16 +91,26 @@ void setup() {
     digitalWrite(STATUS_LED_PIN, LOW);
     delay(100);
 
-    inSettingsLoop = !inSettingsLoop;
-    if (inSettingsLoop) {
-      brightnessController->setCurrentBrightnessIndex(0);
-      settingsController->handle_button_click(brightnessController->getCurrentBrightnessIndex());
+    if (!inACSwitchLoop) {
+      inSettingsLoop = !inSettingsLoop;
+      if (inSettingsLoop) {
+        brightnessController->setCurrentBrightnessIndex(0);
+        settingsController->handle_button_click(brightnessController->getCurrentBrightnessIndex());
+      }
+    }
+    else {
+      acSwitchController->handle_button_double_click();
     }
   });
 
   button->attachLongPressStart([]() {
     if (!inSettingsLoop) {
-      handleHold();
+      inACSwitchLoop = !inACSwitchLoop;
+      if (inACSwitchLoop) {
+        acSwitchController->currentTestIndex = 1;
+        digitalWrite(STATUS_LED_PIN, LOW);
+        delay(200);
+      }
     }
     else {
       settingsController->handle_button_hold(brightnessController->getCurrentBrightnessIndex());
@@ -134,6 +127,9 @@ void loop() {
     settingsController->settings_loop(brightnessController->getCurrentBrightnessIndex());
     return;
   }
+  if (inACSwitchLoop) {
+    return;
+  }
 
   // Mains Power Cycle Check
   if (!mainsPresent && currentMains) {
@@ -144,7 +140,7 @@ void loop() {
       brightnessController->saveBrightnessIndex(currentBrightnessIndex);
     }
     else {
-      handleACSwitch();
+      acSwitchController->handleACSwitch(AC_SW_DELAY);
     }
   }
 
