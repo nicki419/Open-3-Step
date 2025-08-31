@@ -13,14 +13,12 @@ BrightnessController::BrightnessController(dimmerLamp* dimmer, AT24C256* eeprom)
 }
 
 bool BrightnessController::writeAndVerify(const byte address, const byte data) const {
+    dimmer->setPower(0);
+    dimmer->setState(OFF);
+    delay(50);
     for (int attempt = 0; attempt < 3; attempt++) {
-        // Temporarily disable dimmer
-        dimmer->setPower(0);
-        dimmer->setState(OFF);
-        delayMicroseconds(100);
-
         eeprom->write(address, data);
-        delayMicroseconds(100);
+        delay(20);
 
         if (const byte readBack = eeprom->read(address); readBack == data) {
             dimmer->setState(ON);
@@ -42,17 +40,31 @@ byte BrightnessController::readWithRetry(const byte address, const byte defaultV
 
         if (const byte value = eeprom->read(address); value < 3) {
             dimmer->setState(ON);
-            applyBrightness();
             return value;
         }
     }
 
     dimmer->setState(ON);
-    applyBrightness();
     return defaultValue;
 }
 
-void BrightnessController::saveBrightness(const int currentBrightnessIndex) const {
+byte BrightnessController::readBrightnessWithRetry(const byte address, const byte defaultValue) const {
+    for (int attempt = 0; attempt < 3; attempt++) {
+        dimmer->setPower(0);
+        dimmer->setState(OFF);
+        delayMicroseconds(100);
+
+        if (const byte value = eeprom->read(address); value >= 1 && value <= 100) {
+            dimmer->setState(ON);
+            return value;
+        }
+    }
+    dimmer->setState(ON);
+    return defaultValue;
+}
+
+
+void BrightnessController::saveBrightnessIndex(const int currentBrightnessIndex) const {
     if (!writeAndVerify(BRIGHTNESS_INDEX_ADDR, currentBrightnessIndex)) {
         // Write failed - indicate error by rapid LED flashing
 #ifdef DEBUG
@@ -67,7 +79,13 @@ void BrightnessController::saveBrightness(const int currentBrightnessIndex) cons
 }
 
 void BrightnessController::applyBrightness() const {
-    dimmer->setPower(brightnessLevels[currentBrightnessIndex]);
+    const int address = currentBrightnessIndex == 0
+                            ? BRIGHTNESS_VALUE1_ADDR
+                            : currentBrightnessIndex == 1
+                                  ? BRIGHTNESS_VALUE2_ADDR
+                                  : BRIGHTNESS_VALUE3_ADDR;
+    const int brightness = readBrightnessWithRetry(address, 0);
+    dimmer->setPower(brightness);
 }
 
 void BrightnessController::cycleBrightness() {
@@ -108,4 +126,8 @@ int BrightnessController::getCurrentBrightness() const {
 
 int BrightnessController::getCurrentBrightnessIndex() const {
     return currentBrightnessIndex;
+}
+
+void BrightnessController::setCurrentBrightnessIndex(const int currentBrightnessIndex) {
+    this->currentBrightnessIndex = currentBrightnessIndex;
 }

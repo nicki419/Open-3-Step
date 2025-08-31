@@ -4,3 +4,6 @@
 [submodule "Code/v_0.2/arduino-library-at24cxxx"]
 	path = Code/v_0.2/lib/arduino-library-at24cxxx
 	url = https://github.com/stefangs/arduino-library-at24cxxx.git
+[submodule "Code/v_0.2/OneButton"]
+	path = Code/v_0.2/lib/OneButton
+	url = https://github.com/mathertel/OneButton.git
