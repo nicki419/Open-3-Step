@@ -10,6 +10,4 @@ and press F6 to render and F7 to export.
 
 Files starting with an underscore are modules. They are only used in other files, you do not need to open these.
 
-Print the AC dimmer mount on its long side instead of its baseplate. I recommend giving it tree supports and a raft.
-
 The RBDimmer module comes with an M2 version as well. That file also includes the washers needed to mount it with M2 screws.
