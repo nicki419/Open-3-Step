@@ -31,16 +31,7 @@ for(i = [0 : 1])
 {
     for(j = [0 : 1])
     {
-        translate([i*5, j*5, 0]) washer();
-        translate([i*5, j*5, 0]) washer();
-    }
-}
-
-module washer()
-{
-    difference()
-    {
-        cylinder(r=3-3/4, h=1.5);
-        cylinder(r=1, h=1.5);
+        translate([i*5, j*5, 0]) washer_m2_to_m3();
+        translate([i*5, j*5, 0]) washer_m2_to_m3();
     }
 }

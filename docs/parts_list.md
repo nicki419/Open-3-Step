@@ -109,8 +109,8 @@ These are the standalone PCBs. Including Pictures I took in case the links are d
 **Robotdyn RBDimmer Module** https://www.aliexpress.com/item/1005008561862601.html
 ![RBDimmer Image](img/rbdimmer.jpg)
 
-**AC Switch (v0.2 only, optional)** https://www.aliexpress.com/item/1005007092642617.html
-You'll want to solder one of your terminal connectors to its input.
+**AC Switch (JQC3F-05VDC-C with Control Board (5V)) (v0.2 only, optional)** https://www.aliexpress.com/item/1005004594181635.html
+
 ![AC Switch Image](img/ac_switch.jpg)
 
 **AC Detector Module 3.3/5V** https://www.aliexpress.com/item/1005005829148627.html
