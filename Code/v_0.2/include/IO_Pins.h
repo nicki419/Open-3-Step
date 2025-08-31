@@ -8,7 +8,8 @@
 #define MAINS_DETECT_PIN PD4     // Mains detector output (LOW = mains present)
 #define ZERO_CROSS_PIN PD2       // Zero-cross input for dimmer timing
 #define DIMMER_PIN PD3           // Dimmer PSM output
-#define STATUS_LED_PIN PD6      // External status LED
+#define STATUS_LED_PIN PD6       // External status LED
+#define AC_SW_PIN PD5            // AC switch output
 
 #define POT1_PIN A0             // ADC2 (PC2/A2)
 #define POT2_PIN A1             // ADC1 (PC1/A1)
