@@ -10,6 +10,7 @@
 #include "settings_controller.h"
 
 #define DELAY 500
+#define AC_SW_DELAY 75
 
 constexpr int brightnessLevels[3] = {30, 60, 100}; // brightness % levels
 
@@ -38,6 +39,30 @@ void handleHold() {
 
 }
 
+void handleACSwitch() {
+  switch (brightnessController->getCurrentBrightnessIndex()) {
+    // Medium Brightness. Toggle AC Switch Once.
+    case 1:
+      digitalWrite(AC_SW_PIN, HIGH);
+      delay(AC_SW_DELAY);
+      digitalWrite(AC_SW_PIN, LOW);
+      break;
+
+    // Lowest Brightness. Toggle AC Switch Twice.
+    case 2:
+      digitalWrite(AC_SW_PIN, HIGH);
+      delay(AC_SW_DELAY);
+      digitalWrite(AC_SW_PIN, LOW);
+      delay(AC_SW_DELAY);
+      digitalWrite(AC_SW_PIN, HIGH);
+      delay(AC_SW_DELAY);
+      digitalWrite(AC_SW_PIN, LOW);
+      break;
+    default:
+      break;
+  }
+}
+
 void setup() {
   pinMode(MAINS_DETECT_PIN, INPUT);
   pinMode(STATUS_LED_PIN, OUTPUT);
@@ -45,6 +70,7 @@ void setup() {
   pinMode(POT1_PIN, INPUT);
   pinMode(POT2_PIN, INPUT);
   pinMode(POT3_PIN, INPUT);
+  pinMode(AC_SW_PIN, OUTPUT);
 
   Wire.begin();
   dimmer.begin(NORMAL_MODE, ON);
@@ -59,6 +85,7 @@ void setup() {
 
   loadBrightness();
   brightnessController->applyBrightness();
+  handleACSwitch();
 
 #ifdef DEBUG
   digitalWrite(STATUS_LED_PIN, HIGH);
@@ -108,12 +135,16 @@ void loop() {
     return;
   }
 
+  // Mains Power Cycle Check
   if (!mainsPresent && currentMains) {
     if (const unsigned long interruption = millis() - mainsLostTime; interruption <= DELAY) {
       brightnessController->cycleBrightness();
       const int currentBrightnessIndex = brightnessController->getCurrentBrightnessIndex();
       brightnessController->applyBrightness();
       brightnessController->saveBrightnessIndex(currentBrightnessIndex);
+    }
+    else {
+      handleACSwitch();
     }
   }
 
