@@ -42,7 +42,7 @@ You have many options of ordering your PCB. I went with PCBWay because they offe
 
 - Fuses are in Series with the live line of your input. Their order should not matter, as the thermal fuse can handle 10A.
 - Capacitors are in parallel with the HLK-PM01 output lines.
-- The Resistor is in Series with the HLK-PM01's VCC output line after the caps.
+- The Resistor is in Series with the HLK-PM01's VCC output line before the caps. (I did it after, which is wrong. This resistor prevents current surge when charging capacitors, especially when adding more later)
 - Use silicon rubber thermal glue to attach the thermal fuse to the HLK-PM01.
 
 
