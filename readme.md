@@ -1,6 +1,7 @@
 # Open 3 Step
 
-(WIP) Open-Source Circuit and code for custom built 120/240V 3-step (or  n-step) light bulb dimmer working by turning off/on the light switch  quickly to switch between brightness levels. Also provides  memory-functionality to non-memory 3-step bulbs.
+Open-Source Circuit and code for custom built 120/240V 3-step (or  n-step) light bulb dimmer working by turning off/on the light switch  quickly to switch between brightness levels. Also provides  memory-functionality to non-memory 3-step bulbs.
+Please take the time to read everything. It would mean a lot to me. Otherwise, just move on to docs/howto.md
 
 ---
 
@@ -19,15 +20,17 @@ Over the summer, I learned the basics of PCB Design and ordered my boards for th
 
 **0.2**
 
-Work in progress. This version will implement the features described above on a custom PCB. All the components will, however, also fit on a 30x70mm prototyping board, if you really want to go that route.
+This version will implement the features described above on a custom PCB. All the components will, however, also fit on a 30x70mm prototyping board, if you really want to go that route.
 
-At the moment, there is no release. If you want to have an early peek at the files, you must do so on your own. To not clutter the repo, I will share exported PDFs, gerber files, STLs, etc. only via releases.
+To not clutter the repo, I will share exported PDFs, gerber files, STLs, etc. only via releases.
 
-(Proposed) Changelog:
+Changelog:
 
 - Add Support for non-memory 3-step bulbs through fast switching when the system powers up
 - Add analogue input via 100K potentiometers and a button to configure the brightness levels outside of code
 - Move from arduino to platformio and add separate debug and release profiles (release will have no LED blinking)
+- Create Settings Mode for configuring brightnesses and saving into EEPROM
+- Create 3-step calibration mode to find out how long the delay in your bulbs is.
 
 
 **0.1**
