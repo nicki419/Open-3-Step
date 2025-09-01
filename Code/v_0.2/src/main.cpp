@@ -9,8 +9,8 @@
 
 #include "ac_switch_controller.h"
 #include "settings_controller.h"
+#include "delay.h"
 
-#define DELAY 4000
 #define AC_SW_DELAY 75
 
 constexpr int brightnessLevels[3] = {30, 60, 100}; // brightness % levels
